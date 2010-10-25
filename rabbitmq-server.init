@@ -1,0 +1,57 @@
+#!/bin/sh
+#
+# rabbitmq-server	Starts the rabbitmq-server daemon
+#
+# chkconfig:	345 60 40
+# description:	Supervise rabbitmq-server
+# processname:	rabbitmq-server
+#
+# pidfile:		/var/run/rabbitmq-server.pid
+#
+# processname:	rabbitmq-server
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+DAEMON=/usr/sbin/rabbitmq-multi
+USER=rabbitmq
+NODE_COUNT=1
+
+DEFAULTS_FILE=/etc/sysconfig/rabbitmq-server
+
+if [ -f "$DEFAULTS_FILE" ]; then
+	. $DEFAULTS_FILE
+fi
+
+start() {
+	msg_starting "rabbitmq-server daemon"
+	daemon --user $USER $DAEMON start_all $NODE_COUNT
+}
+
+stop() {
+	msg_stopping "rabbitmq-server daemon"
+	daemon --user $USER $DAEMON stop_all
+}
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  status)
+	status rabbitmq-server
+	;;
+  *)
+	msg_usage "$0 {start|stop|status}"
+	exit 3
+esac
+
+exit $RETVAL
