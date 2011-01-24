@@ -11,6 +11,9 @@ Source0:	http://www.rabbitmq.com/releases/%{name}/v%{version}/%{name}-%{version}
 Source1:	rabbitmq.conf
 Source2:	%{name}.init
 URL:		http://www.rabbitmq.com
+BuildRequires:	erlang
+BuildRequires:	python
+BuildRequires:	python-modules
 BuildRequires:	xmlto
 BuildRequires:	docbook-dtd45-xml
 Requires:		erlang
