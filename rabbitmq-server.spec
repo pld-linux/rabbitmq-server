@@ -2,21 +2,25 @@
 %define		gid	257
 Summary:	Implementation of an AMQP broker
 Name:		rabbitmq-server
-Version:	2.1.1
-Release:	0.10
+Version:	2.4.1
+Release:	0.1
 License:	MPL v1.1
 Group:		Applications/Communications
 Source0:	http://www.rabbitmq.com/releases/%{name}/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	2359d4b90431925e971726a6e0274bf8
+# Source0-md5:	6db31b4353bd44f8ae9b6756b0a831e6
 Source1:	rabbitmq.conf
 Source2:	%{name}.init
-URL:		http://www.rabbitmq.com
+Source3:	%{name}.sysconfig
+URL:		http://www.rabbitmq.com/
+BuildRequires:	docbook-dtd45-xml
 BuildRequires:	erlang
 BuildRequires:	python
 BuildRequires:	python-modules
+BuildRequires:	rpmbuild(macros) >= 1.268
 BuildRequires:	xmlto
-BuildRequires:	docbook-dtd45-xml
-Requires:		erlang
+Requires(post,preun):	/sbin/chkconfig
+Requires:	erlang
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -32,18 +36,16 @@ operating systems and developer platforms.
 
 %install
 rm -rf $RPM_BUILD_ROOT
+install -d $RPM_BUILD_ROOT{/var/{lib,log}/rabbitmq,/etc/{sysconfig,rc.d/init.d,rabbitmq}}
 
 %{__make} install \
-	TARGET_DIR=$RPM_BUILD_ROOT/%{_datadir}/%{name} \
+	TARGET_DIR=$RPM_BUILD_ROOT%{_libdir}/%{name} \
 	SBIN_DIR=$RPM_BUILD_ROOT%{_sbindir} \
 	MAN_DIR=$RPM_BUILD_ROOT%{_mandir}
 
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/rabbitmq/
-install -d $RPM_BUILD_ROOT/var/lib/rabbitmq
-install -d $RPM_BUILD_ROOT/var/log/rabbitmq
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/rabbitmq/rabbitmq.conf
-install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/%{name}
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rabbitmq/rabbitmq.conf
+install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
+install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -68,16 +70,13 @@ fi
 %config(noreplace) %verify(not md5 mtime size) /etc/rabbitmq/rabbitmq.conf
 %attr(754,root,root) %{_sysconfdir}/rc.d/init.d/%{name}
 %attr(755,root,root) %{_sbindir}/*
-%dir %{_datadir}/%{name}
-%dir %{_datadir}/%{name}/ebin
-%dir %{_datadir}/%{name}/include
-%dir %{_datadir}/%{name}/plugins
-%dir %{_datadir}/%{name}/sbin
-%{_datadir}/%{name}/ebin/*
-%{_datadir}/%{name}/include/*
-%{_datadir}/%{name}/plugins/*
-%attr(755,root,root) %{_datadir}/%{name}/sbin/*
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/ebin
+%{_libdir}/%{name}/include
+%{_libdir}/%{name}/plugins
+%dir %{_libdir}/%{name}/sbin
+%attr(755,root,root) %{_libdir}/%{name}/sbin/*
 %{_mandir}/man1/*
 %{_mandir}/man5/*
-%attr(755,rabbitmq,rabbitmq) /var/lib/rabbitmq
-%attr(755,rabbitmq,rabbitmq) /var/log/rabbitmq
+%attr(750,rabbitmq,rabbitmq) /var/lib/rabbitmq
+%attr(750,rabbitmq,rabbitmq) /var/log/rabbitmq
