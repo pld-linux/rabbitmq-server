@@ -34,32 +34,39 @@ operating systems and developer platforms.
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-		TARGET_DIR=$RPM_BUILD_ROOT/%{_datadir}/%{name} \
-		SBIN_DIR=$RPM_BUILD_ROOT/%{_sbindir} \
-		MAN_DIR=$RPM_BUILD_ROOT/%{_mandir} \
+	TARGET_DIR=$RPM_BUILD_ROOT/%{_datadir}/%{name} \
+	SBIN_DIR=$RPM_BUILD_ROOT%{_sbindir} \
+	MAN_DIR=$RPM_BUILD_ROOT%{_mandir}
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/rabbitmq/
 install -d $RPM_BUILD_ROOT/var/lib/rabbitmq
 install -d $RPM_BUILD_ROOT/var/log/rabbitmq
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/rabbitmq/rabbitmq.conf
-install -m 755 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/%{name}
+install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/rabbitmq/rabbitmq.conf
+install %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/%{name}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-%groupadd -r -g %{gid} rabbitmq
-%useradd -r -u %{uid} -s /bin/sh -d /var/lib/rabbitmq -g rabbitmq -c "RabbitMQ Server" rabbitmq
+%groupadd -g %{gid} rabbitmq
+%useradd -u %{uid} -s /bin/sh -d /var/lib/rabbitmq -g rabbitmq -c "RabbitMQ Server" rabbitmq
 
 %post
-/sbin/chkconfig --add rabbitmq-server
+/sbin/chkconfig --add %{name}
+%service %{name} restart
+
+%preun
+if [ "$1" = "0" ]; then
+	%service %{name} stop
+	/sbin/chkconfig --del %{name}
+fi
 
 %files
 %defattr(644,root,root,755)
-%doc LICENSE README LICENSE-MPL-RabbitMQ
+%doc README
 %config(noreplace) %verify(not md5 mtime size) /etc/rabbitmq/rabbitmq.conf
-%attr(755,root,root) %{_sysconfdir}/rc.d/init.d/%{name}
+%attr(754,root,root) %{_sysconfdir}/rc.d/init.d/%{name}
 %attr(755,root,root) %{_sbindir}/*
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/ebin
