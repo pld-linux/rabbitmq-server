@@ -13,7 +13,7 @@
 # Source function library
 . /etc/rc.d/init.d/functions
 
-DAEMON=/usr/sbin/rabbitmq-multi
+DAEMON=/usr/sbin/rabbitmq-server
 USER=rabbitmq
 NODE_COUNT=1
 
@@ -24,13 +24,28 @@ if [ -f "$DEFAULTS_FILE" ]; then
 fi
 
 start() {
-	msg_starting "rabbitmq-server daemon"
-	daemon --user $USER $DAEMON start_all $NODE_COUNT
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/ejabberd ]; then
+		msg_starting "rabbitmq-server daemon"
+		daemon --user $USER $DAEMON start_all $NODE_COUNT -detached
+		RETVAL=$?
+		if [ $RETVAL -eq 0 ]; then
+			touch /var/lock/subsys/rabbitmq-server
+		fi
+	else
+		msg_already_running "rabbitmq-server daemon"
+	fi
 }
 
 stop() {
-	msg_stopping "rabbitmq-server daemon"
-	daemon --user $USER $DAEMON stop_all
+	# Stop daemons.
+	if [ -f /var/lock/subsys/rabbitmq-server ]; then
+		msg_stopping "rabbitmq-server daemon"
+		daemon --user $USER /usr/sbin/rabbitmqctl stop
+		rm -f /var/lock/subsys/rabbitmq-server
+	else
+		msg_not_running "rabbitmq-server daemon"
+	fi
 }
 
 RETVAL=0
