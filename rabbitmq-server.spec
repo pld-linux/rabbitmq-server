@@ -3,7 +3,7 @@
 Summary:	Implementation of an AMQP broker
 Name:		rabbitmq-server
 Version:	2.4.1
-Release:	0.1
+Release:	0.2
 License:	MPL v1.1
 Group:		Applications/Communications
 Source0:	http://www.rabbitmq.com/releases/%{name}/v%{version}/%{name}-%{version}.tar.gz
@@ -43,7 +43,7 @@ install -d $RPM_BUILD_ROOT{/var/{lib,log}/rabbitmq,/etc/{sysconfig,rc.d/init.d,r
 	SBIN_DIR=$RPM_BUILD_ROOT%{_sbindir} \
 	MAN_DIR=$RPM_BUILD_ROOT%{_mandir}
 
-install %{SOURCE1} $RPM_BUILD_ROOT/etc/rabbitmq/rabbitmq.conf
+install %{SOURCE1} $RPM_BUILD_ROOT/etc/rabbitmq/rabbitmq-env.conf
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
 
@@ -67,7 +67,8 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc README
-%config(noreplace) %verify(not md5 mtime size) /etc/rabbitmq/rabbitmq.conf
+%dir /etc/rabbitmq
+%config(noreplace) %verify(not md5 mtime size) /etc/rabbitmq/rabbitmq-env.conf
 %attr(754,root,root) %{_sysconfdir}/rc.d/init.d/%{name}
 %attr(755,root,root) %{_sbindir}/*
 %dir %{_libdir}/%{name}
