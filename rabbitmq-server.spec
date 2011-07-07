@@ -2,12 +2,12 @@
 %define		gid	257
 Summary:	Implementation of an AMQP broker
 Name:		rabbitmq-server
-Version:	2.4.1
-Release:	0.2
+Version:	2.5.1
+Release:	1
 License:	MPL v1.1
 Group:		Applications/Communications
 Source0:	http://www.rabbitmq.com/releases/%{name}/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	6db31b4353bd44f8ae9b6756b0a831e6
+# Source0-md5:	51295dfd10661ea0db99d9a22ae4445d
 Source1:	rabbitmq.conf
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
@@ -70,6 +70,7 @@ fi
 %dir /etc/rabbitmq
 %config(noreplace) %verify(not md5 mtime size) /etc/rabbitmq/rabbitmq-env.conf
 %attr(754,root,root) %{_sysconfdir}/rc.d/init.d/%{name}
+%{_sysconfdir}/sysconfig/%{name}
 %attr(755,root,root) %{_sbindir}/*
 %dir %{_libdir}/%{name}
 %{_libdir}/%{name}/ebin
