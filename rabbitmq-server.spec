@@ -2,12 +2,12 @@
 %define		gid	257
 Summary:	Implementation of an AMQP broker
 Name:		rabbitmq-server
-Version:	2.5.1
+Version:	2.7.1
 Release:	1
 License:	MPL v1.1
 Group:		Applications/Communications
 Source0:	http://www.rabbitmq.com/releases/%{name}/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	51295dfd10661ea0db99d9a22ae4445d
+# Source0-md5:	44eb09d2dff8ce641a1fe7f255a4c546
 Source1:	rabbitmq.conf
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
@@ -43,6 +43,8 @@ install -d $RPM_BUILD_ROOT{/var/{lib,log}/rabbitmq,/etc/{sysconfig,rc.d/init.d,r
 	SBIN_DIR=$RPM_BUILD_ROOT%{_sbindir} \
 	MAN_DIR=$RPM_BUILD_ROOT%{_mandir}
 
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/%{name}/{INSTALL,LICENSE*} 
+
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rabbitmq/rabbitmq-env.conf
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/rc.d/init.d/%{name}
 install %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/%{name}
@@ -69,6 +71,7 @@ fi
 %doc README
 %dir /etc/rabbitmq
 %config(noreplace) %verify(not md5 mtime size) /etc/rabbitmq/rabbitmq-env.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/rabbitmq-server
 %attr(754,root,root) %{_sysconfdir}/rc.d/init.d/%{name}
 %{_sysconfdir}/sysconfig/%{name}
 %attr(755,root,root) %{_sbindir}/*
