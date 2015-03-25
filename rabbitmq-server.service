@@ -1,0 +1,12 @@
+[Unit]
+Description=RabbitMQ server
+
+[Service]
+Environment=NODE_COUNT=1
+EnvironmentFile=/etc/sysconfig/rabbitmq-server
+Type=notify
+ExecStart=/usr/sbin/rabbitmq-server start_all $NODE_COUNT
+User=rabbitmq
+
+[Install]
+WantedBy=multi-user.target

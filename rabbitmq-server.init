@@ -48,6 +48,22 @@ stop() {
 	fi
 }
 
+rmq_status() {
+
+	if output="$(/usr/sbin/rabbitmqctl status 2>/dev/null)" ; then
+		pid=$(echo "$output" | awk '/{pid,/ { match($0, "{pid,[0-9]+}"); print substr($0,RSTART+5,RLENGTH-6) }')
+		uptime=$(echo "$output" | awk '/{uptime,/ { match($0, "{uptime,[0-9]+}"); print substr($0,RSTART+8,RLENGTH-9) }')
+		nls "%s (pid %s) is running%s" "rabbitmq-server" "$pid" "$cpuset_msg"
+		return 0
+	fi
+	if [ -f /var/lock/subsys/rabbitmq-server ]; then
+		nls "daemon %s dead but subsys (%s) locked" "rabbitmq-server" "rabbitmq-server"
+		return 2
+	fi
+	nls "%s is stopped" "rabbitmq-server"
+	return 3
+}
+
 RETVAL=0
 # See how we were called.
 case "$1" in
@@ -62,7 +78,7 @@ case "$1" in
 	start
 	;;
   status)
-	status rabbitmq-server
+	rmq_status
 	;;
   *)
 	msg_usage "$0 {start|stop|status}"
