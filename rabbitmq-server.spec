@@ -12,6 +12,7 @@ Source1:	rabbitmq.conf
 Source2:	%{name}.init
 Source3:	%{name}.sysconfig
 Source4:	%{name}.service
+Patch0:		rabbitmqctl-no_root.patch
 URL:		http://www.rabbitmq.com/
 BuildRequires:	docbook-dtd45-xml
 BuildRequires:	erlang
@@ -34,6 +35,8 @@ operating systems and developer platforms.
 
 %prep
 %setup -q
+
+%patch0 -p1
 
 %build
 %{__make}

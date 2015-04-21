@@ -1,0 +1,17 @@
+diff -dur -x '*~' rabbitmq-server-3.5.0.orig/scripts/rabbitmqctl rabbitmq-server-3.5.0/scripts/rabbitmqctl
+--- rabbitmq-server-3.5.0.orig/scripts/rabbitmqctl	2015-03-11 15:04:09.000000000 +0100
++++ rabbitmq-server-3.5.0/scripts/rabbitmqctl	2015-03-26 09:39:32.000000000 +0100
+@@ -15,6 +15,13 @@
+ ##  Copyright (c) 2007-2014 GoPivotal, Inc.  All rights reserved.
+ ##
+ 
++# make sure we won't run as root
++# otherwise /var/lib/rabbitmq/.erlang.cookie with wrong permissions might
++# get created.
++if [ $(id -u) -eq 0 ] ; then
++	exec /sbin/setuidgid -s rabbitmq $0 "$@"
++fi
++
+ # Get default settings with user overrides for (RABBITMQ_)<var_name>
+ # Non-empty defaults should be set in rabbitmq-env
+ . `dirname $0`/rabbitmq-env
