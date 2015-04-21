@@ -3,7 +3,7 @@
 Summary:	Implementation of an AMQP broker
 Name:		rabbitmq-server
 Version:	3.5.0
-Release:	2
+Release:	3
 License:	MPL v1.1
 Group:		Applications/Communications
 Source0:	http://www.rabbitmq.com/releases/rabbitmq-server/v%{version}/%{name}-%{version}.tar.gz
@@ -40,13 +40,13 @@ operating systems and developer platforms.
 %patch0 -p1
 
 %build
-%{__make}
+%{__make} -j1
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{/var/{lib,log}/rabbitmq,/etc/{sysconfig,rc.d/init.d,rabbitmq},%{systemdunitdir}}
 
-%{__make} install \
+%{__make} -j1 install \
 	TARGET_DIR=$RPM_BUILD_ROOT%{_libdir}/%{name} \
 	SBIN_DIR=$RPM_BUILD_ROOT%{_sbindir} \
 	MAN_DIR=$RPM_BUILD_ROOT%{_mandir}
