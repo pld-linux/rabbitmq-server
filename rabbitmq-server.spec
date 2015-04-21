@@ -3,7 +3,7 @@
 Summary:	Implementation of an AMQP broker
 Name:		rabbitmq-server
 Version:	3.5.0
-Release:	1
+Release:	2
 License:	MPL v1.1
 Group:		Applications/Communications
 Source0:	http://www.rabbitmq.com/releases/rabbitmq-server/v%{version}/%{name}-%{version}.tar.gz
@@ -17,6 +17,7 @@ URL:		http://www.rabbitmq.com/
 BuildRequires:	docbook-dtd45-xml
 BuildRequires:	erlang
 BuildRequires:	erlang-sd_notify
+BuildRequires:	nc
 BuildRequires:	python
 BuildRequires:	python-modules
 BuildRequires:	rpmbuild(macros) >= 1.644
